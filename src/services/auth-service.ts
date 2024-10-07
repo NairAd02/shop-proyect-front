@@ -1,6 +1,7 @@
 import { JWT } from "@/dto/jwt.dto"
 import { BadRequestInterface } from "@/interfaces/bad-request-interface"
 import { RolEnum } from "@/utils/enums"
+import { getCookie } from "@/utils/token-utilities"
 
 export class AuthService {
     private static authService: AuthService
@@ -23,7 +24,7 @@ export class AuthService {
     // Método para realizar el login
     public async login(userName: string, password: string): Promise<string | undefined> {
 
-        const url = 'http://localHost:3001/auth/login'
+        const url = process.env.NEXT_PUBLIC_API_URL + '/auth/login'
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -59,7 +60,7 @@ export class AuthService {
     // método para registrar a un usuario
     public async registrer(userName: string, password: string, email: string, rol: RolEnum) {
 
-        const url = 'http://localHost:3001/auth/registrer'
+        const url = process.env.NEXT_PUBLIC_API_URL + '/auth/registrer'
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -85,7 +86,7 @@ export class AuthService {
 
     // Método para encontrar el id de un usuario dado su email
     public async findUserWithEmail(email: string): Promise<string> {
-        const url = 'http://localHost:3001/auth/findUserWithEmail'
+        const url = process.env.NEXT_PUBLIC_API_URL + '/auth/findUserWithEmail'
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -109,7 +110,7 @@ export class AuthService {
 
     // Método para verificar si el código introducido por el usuario es correcto
     public async verifyIdentity(idUser: string, code: string) {
-        const url = 'http://localHost:3001/auth/verificarCodigoIdentidad'
+        const url = process.env.NEXT_PUBLIC_API_URL + '/auth/verificarCodigoIdentidad'
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -132,7 +133,7 @@ export class AuthService {
 
     // Método para activar la cuenta de un usuario
     public async activateAccount(idUser: string, code: string) {
-        const url = 'http://localHost:3001/auth/activarCuentaUsuario'
+        const url = process.env.NEXT_PUBLIC_API_URL + '/auth/activarCuentaUsuario'
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -155,7 +156,7 @@ export class AuthService {
 
     // Método para enviar correo eléctronico a un usuario en específico
     public async sendVerificationCode(idUser: string) {
-        const url = 'http://localHost:3001/auth/enviarCodigoVerificacionIdentidad/' + idUser
+        const url = process.env.NEXT_PUBLIC_API_URL + '/auth/enviarCodigoVerificacionIdentidad/' + idUser
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -174,7 +175,7 @@ export class AuthService {
 
     // Método para ejecutar el cambio de contraseña de un usuario
     public async changePassword(idUser: string, newPassword: string) {
-        const url = 'http://localHost:3001/auth/cambiarContrasena/' + idUser
+        const url = process.env.NEXT_PUBLIC_API_URL + '/auth/cambiarContrasena/' + idUser
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -192,6 +193,45 @@ export class AuthService {
             throw new Error(bagRequest.message)
         }
         const json = await res.json() // se obtiene el json de la respuesta
+    }
+
+    // Método para verificar si la contraseña anterior de un usuario en específico coincide con la contraseña proporcionada
+
+    // Método para ejecutar el cambio de contraseña de un usuario
+    public async verificarOldPassword(idUser: string, oldPassword: string): Promise<boolean> {
+        const url = process.env.NEXT_PUBLIC_API_URL + '/auth/verificarOldPassword/' + idUser
+        const res: Response = await fetch(url, { // se realiza la peticion al end point
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                oldPassword: oldPassword
+            })
+        })
+
+        // Si no ocurre nigún error
+        if (res.status === 400) { // ocurrió una BadRequest
+            const bagRequest: BadRequestInterface = await res.json() // se obtiene el json de la respuesta
+            throw new Error(bagRequest.message)
+        }
+        const json: {
+            isEquals: boolean
+        } = await res.json() // se obtiene el json de la respuesta
+
+        return json.isEquals // "true" si son iguales, "false" si son distintas
+    }
+
+    // Método para obtener el rol del usuario logeado atraves del Token
+    public getRolToken(): RolEnum {
+        // se  obtiene el token
+        const token = getCookie('token')
+        // se extrae el rol del usuario
+        if (token) // si el usuario se encuentra autenticado
+            return token.payload.rol
+        else
+            throw new Error("El usuario no se encuentra autenticado")
     }
 
 }

@@ -6,6 +6,7 @@ import ModalLogin from '@/components/modal-login'
 import Link from 'next/link'
 import { AuthService } from '@/services/auth-service'
 import { useRouter } from 'next/navigation'
+import { RolEnum } from '@/utils/enums'
 
 const authService: AuthService = AuthService.getInstnacie()
 
@@ -24,7 +25,12 @@ export default function LoginPage() {
         router.push('/activation-code/' + idUsuario) // se redirige a la página del código de activación
       }
       else { // si no, entonces el login fue realizado con éxito
-        router.push('/administration-panel')
+        // se comprueba el rol del usuario para saber a donde redirigirlo
+        const rolUserLog = authService.getRolToken()
+        if (rolUserLog === RolEnum.Administrador || rolUserLog === RolEnum.SuperAdministrador) // si el usuario es administrador o súper administrador
+          router.push('/administration-panel')
+        else // de forma contraria y por el momento no es posible acceder a otra página
+          alert("Por el momento su rol no tiene permisos para entrar a ninguna página")
       }
 
     } catch (error) {

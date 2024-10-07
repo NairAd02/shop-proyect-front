@@ -30,7 +30,7 @@ export class ProductsService {
         if (preciodiscount) { params.append('preciodiscount', preciodiscount.toString()) }
         if (averageReview) { params.append('averageReview', averageReview.toString()) }
 
-        const url = 'http://localHost:3001/product?' + params
+        const url = process.env.NEXT_PUBLIC_API_URL + '/product?' + params
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'GET',
             headers: {
@@ -54,7 +54,7 @@ export class ProductsService {
     // Método para insertar un producto
     public async createProduct(createProductDTO: CreateProductDTO) {
 
-        const url = 'http://localHost:3001/product'
+        const url = process.env.NEXT_PUBLIC_API_URL + '/product'
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -79,7 +79,7 @@ export class ProductsService {
     // Método para actualizar un producto en específico
     public async updateProduct(idProduct: string, updateProductDTO: UpdateProductDTO) {
 
-        const url = 'http://localHost:3001/product/' + idProduct
+        const url = process.env.NEXT_PUBLIC_API_URL + '/product/' + idProduct
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'PATCH',
             headers: {
@@ -105,7 +105,7 @@ export class ProductsService {
     // Método para eliminar todos los productos específicados
     public async removeAll(listProducts: Array<string>) {
 
-        const url = 'http://localHost:3001/product/remove-selected'
+        const url = process.env.NEXT_PUBLIC_API_URL + '/product/remove-selected'
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {

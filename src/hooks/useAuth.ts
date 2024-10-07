@@ -11,9 +11,7 @@ export function useAuth(activatePage: () => void) {
   const path = usePathname()
   useEffect(() => {
     // cuando se entra a la página se ejecuta la verificación de autenticación
-    console.log("Entre a" + path)
-
-
+    
     const route = findRoute(path) // se obtiene la ruta actual
     // se obtiene el token de sesión
     const jwt = getCookie('token')

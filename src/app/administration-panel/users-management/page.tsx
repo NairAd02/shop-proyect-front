@@ -1,10 +1,19 @@
+'use client'
 import { UsersTable } from '@/components/users-table'
-import React from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import React, { useState } from 'react'
 
 export default function UserManagementPage() {
+    const [isActive, setIsActive] = useState(false)
+    // se protege la página
+    useAuth(() => {
+        setIsActive(true) // si se completó la verificación entonces se muesta la página
+    })
     return (
-        <div>
-            <UsersTable />
-        </div>
+        <>
+            {isActive ? <div>
+                <UsersTable />
+            </div> : 'Loaging...'}
+        </>
     )
 }

@@ -30,7 +30,7 @@ export class UsersService {
             if (rol) { params.append('rol', rol) }
             params.append('idSolicitante', token.payload.userId)
 
-            const url = 'http://localHost:3001/usuario/getAllUsers?' + params
+            const url = process.env.NEXT_PUBLIC_API_URL + '/usuario/getAllUsers?' + params
             const res: Response = await fetch(url, { // se realiza la peticion al end point
                 method: 'GET',
                 headers: {
@@ -58,7 +58,7 @@ export class UsersService {
     // Método para obtener la información de un usuario
     public async findUser(idUser: string): Promise<UserDTO | undefined> {
         let user: UserDTO | undefined = undefined
-        const url = 'http://localHost:3001/usuario/getUsuarioById/' + idUser
+        const url = process.env.NEXT_PUBLIC_API_URL + '/usuario/getUsuarioById/' + idUser
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'GET',
             headers: {
@@ -86,7 +86,7 @@ export class UsersService {
         rol?: RolEnum
     ): Promise<void> {
 
-        const url = 'http://localHost:3001/usuario/updateUser/' + idUser
+        const url = process.env.NEXT_PUBLIC_API_URL + '/usuario/updateUser/' + idUser
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'PATCH',
             headers: {
@@ -109,7 +109,7 @@ export class UsersService {
 
     // Método para eliminar todos los usuarios específicados
     public async deleteUsers(usersId: Array<string>): Promise<void> {
-        const url = 'http://localHost:3001/usuario/deleteUsers'
+        const url = process.env.NEXT_PUBLIC_API_URL + '/usuario/deleteUsers'
         const res: Response = await fetch(url, { // se realiza la peticion al end point
             method: 'POST',
             headers: {
@@ -132,7 +132,6 @@ export class UsersService {
     public async findUserLog() {
         // se obtiene el token de autenticación
         const token = getCookie('token')
-        console.log("EL token " + JSON.stringify(token))
         // si el usuario se encuentra logeado
         if (token) {
             return await this.findUser(token.payload.userId)

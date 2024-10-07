@@ -43,11 +43,13 @@ import { UsersService } from "@/services/users-service"
 import { toast } from "sonner"
 import { ModalAlert } from "./modal-alert"
 import ModalChangeRolUserForm from "./modal-change-rol-user-form"
+import { AuthService } from "@/services/auth-service"
 
 
 // se inyecta el servicio de los productos
 const usersService: UsersService = UsersService.getInstnacie()
-
+// se inyecta el servicio de auth
+const authService: AuthService = AuthService.getInstnacie()
 export function UsersTable() {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -66,6 +68,8 @@ export function UsersTable() {
     // estado que representa al usuario seleccionado
     const [selectedUser, setSelectedUser] = useState<UserDTO | undefined>(undefined)
     const [isDelete, setIsDelete] = useState(true)
+    // estado que representa el rol del usuario logeado
+    const [userRolLog, setUserRolLog] = useState(getUserRolLog())
     const refFiltersPanelUsers = useRef<FiltersPanelUsersHandle>()
     // Cuando se monta el componente
     useEffect(() => {
@@ -82,6 +86,18 @@ export function UsersTable() {
     }
 
     // Funciones Services
+    // función para obtener el rol del usuario logeado
+    function getUserRolLog(): RolEnum | undefined {
+        try {
+            return authService.getRolToken()
+        } catch (error) {
+            if (error instanceof Error)
+                alert(error.message)
+
+            console.log(error)
+            return undefined
+        }
+    }
     async function findUsers(userName: string, email: string, rol: RolEnum | undefined) {
         // Se realiza la solicitud de obtención de los productos
         try {
@@ -280,10 +296,10 @@ export function UsersTable() {
             <div className="flex items-center justify-between py-4">
                 <FiltersPanelUsers ref={refFiltersPanelUsers} findUsers={findUsers} />
                 <div className="flex gap-3">
-                    <Button variant={"destructive"} disabled={isDelete} onClick={() => {
+                    {userRolLog === RolEnum.SuperAdministrador ? <Button variant={"destructive"} disabled={isDelete} onClick={() => {
                         // se activa el modal de alerta
                         setIsOpenModalAlerta(true)
-                    }} >Delete</Button>
+                    }} >Delete</Button> : <></>}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto">
