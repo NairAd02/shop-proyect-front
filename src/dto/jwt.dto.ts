@@ -1,6 +1,6 @@
 import { RolEnum } from "@/utils/enums"
 
-interface JWT {
+export interface JWT {
     token: string
     payload: {
         userId: string,

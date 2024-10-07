@@ -1,3 +1,4 @@
+import { JWT } from "@/dto/jwt.dto"
 import { BadRequestInterface } from "@/interfaces/bad-request-interface"
 import { RolEnum } from "@/utils/enums"
 
@@ -13,7 +14,13 @@ export class AuthService {
         return this.authService
     }
 
-    // método para realizar el login
+    // Método para ejecutar un logout
+    public async logout() {
+        // se elimina la información del token
+        document.cookie = 'token=; path=/; max-age=0; secure; samesite=strict';
+    }
+
+    // Método para realizar el login
     public async login(userName: string, password: string): Promise<string | undefined> {
 
         const url = 'http://localHost:3001/auth/login'
@@ -35,11 +42,14 @@ export class AuthService {
             throw new Error(bagRequest.message)
         }
         else {
-            const json = await res.json()
+            const json: JWT | { idUsuario: string } = await res.json()
             if ('idUsuario' in json) // si la respusta contiene el identificador del usuario
                 return json.idUsuario
-            // en caso contrario se trata del token
-            // se almacena en una cookie
+            else {  // en caso contrario se trata del token
+                // Almacenar el token en una cookie
+                const maxAge = 60 * 60 * 24; // 1 día en segundos
+                document.cookie = `token=${JSON.stringify(json)}; path=/; max-age=${maxAge}; secure; samesite=strict`;
+            }
         }
 
         return undefined

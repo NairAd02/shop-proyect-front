@@ -23,8 +23,10 @@ export default function LoginPage() {
       if (idUsuario) {
         router.push('/activation-code/' + idUsuario) // se redirige a la página del código de activación
       }
-      else // si no, entonces el login fue realizado con éxito
-        alert("Login realizado con éxito")
+      else { // si no, entonces el login fue realizado con éxito
+        router.push('/administration-panel')
+      }
+
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message)
@@ -75,7 +77,7 @@ export default function LoginPage() {
         <ModalLogin forgotPassword={forgotPassword} login={login} />
         <p className="mt-8 text-center text-sm text-gray-600">
           You don't have an account?{' '}
-          <Link href="/registrer" className="font-medium text-indigo-600 hover:text-indigo-500" > Create Account Here </Link>
+          <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500" > Create Account Here </Link>
         </p>
 
       </div>
